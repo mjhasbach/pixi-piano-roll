@@ -1,0 +1,8 @@
+{
+  "name": "pixi-piano-roll-test",
+  "private": true,
+  "dependencies": {
+    "teoria": "git://github.com/saebekassebil/teoria.git",
+    "pixi.js": "~3.0.7"
+  }
+}

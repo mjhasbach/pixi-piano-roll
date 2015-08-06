@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="bower_components/pixi.js/bin/pixi.js"></script>
+    <script src="bower_components/teoria/teoria.js"></script>
+    <script src="../dist/pixiPianoRoll.min.js"></script>
+</head>
+<body>
+<script>
+    var pianoRoll = pixiPianoRoll({
+        noteData: [
+            ['0:0:0', 'C4', '1n'],
+            ['1:0:0', 'C#4', '2n'],
+            ['1:2:0', 'D4', '2n'],
+            ['2:0:0', 'D#4', '4n'],
+            ['2:1:0', 'D4', '4n'],
+            ['2:2:0', 'D#4', '4n'],
+            ['2:3:0', 'E4', '4n'],
+            ['3:0:0', 'D#4', '4n'],
+            ['3:1:0', 'D4', '2n'],
+            ['3:3:0', 'C#4', '4n'],
+            ['4:0:0', 'C4', '1n'],
+            ['5:0:0', 'C#4', '2n'],
+            ['5:2:0', 'D4', '2n'],
+            ['6:0:0', 'D#4', '4n'],
+            ['6:1:0', 'D4', '4n'],
+            ['6:2:0', 'D#4', '4n'],
+            ['6:3:0', 'E4', '4n'],
+            ['7:0:0', 'D#4', '4n'],
+            ['7:1:0', 'D4', '2n'],
+            ['7:3:0', 'C#4', '4n']
+        ]
+    });
+
+    document.getElementsByTagName('body')[0].appendChild(pianoRoll.view);
+
+    window.onkeyup = function(e) {
+        if (e.keyCode === 32) {
+            if (pianoRoll.playing) {
+                pianoRoll.pause();
+            }
+            else {
+                pianoRoll.play();
+            }
+        }
+    }
+</script>
+</body>
+</html>
