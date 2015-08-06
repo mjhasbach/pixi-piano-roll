@@ -23,7 +23,8 @@ gulp.task('ES6ToES5UMD', function() {
             dependencies: function() {
                 return [
                     {name: 'pixi.js', global: 'PIXI', param: 'pixi'},
-                    {name: 'teoria'}
+                    {name: 'teoria'},
+                    {name: 'musical-scale-colors', global: 'musicalScaleColors', param: 'musicalScaleColors'}
                 ];
             }
         }))

@@ -2,7 +2,8 @@
   "name": "pixi-piano-roll-test",
   "private": true,
   "dependencies": {
-    "teoria": "git://github.com/saebekassebil/teoria.git",
-    "pixi.js": "~3.0.7"
+    "musical-scale-colors": "~1.0.0",
+    "pixi.js": "~3.0.7",
+    "teoria": "~1.12.0"
   }
 }

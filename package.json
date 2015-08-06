@@ -30,6 +30,7 @@
     "run-sequence": "~1.1.2"
   },
   "dependencies": {
+    "musical-scale-colors": "~1.0.0",
     "pixi.js": "~3.0.7",
     "teoria": "~1.12.0"
   },
