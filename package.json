@@ -39,8 +39,6 @@
     "dist/*"
   ],
   "scripts": {
-    "patch": "release patch",
-    "minor": "release minor",
-    "major": "release major"
+    "release": "release"
   }
 }
