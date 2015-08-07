@@ -84,7 +84,7 @@ function pixiPianoRoll(opt) {
             whiteKeyWidth = barWidth / 2 * rollContainerScale,
             blackKeyWidth = whiteKeyWidth / 1.575;
 
-        for (var i = noteRange.min + 1; i < noteRange.max + 1; i++) {
+        for (var i = noteRange.min + 1; i < noteRange.max + 2; i++) {
             var y = opt.height + (noteRange.min - i) * noteHeight,
                 note = teoria.note.fromKey(i),
                 chroma = note.chroma();
