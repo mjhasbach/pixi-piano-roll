@@ -39,7 +39,6 @@
     "dist/*"
   ],
   "scripts": {
-    "build": "echo 0",
     "patch": "release patch",
     "minor": "release minor",
     "major": "release major"
