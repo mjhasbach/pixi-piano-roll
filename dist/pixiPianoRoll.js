@@ -29,6 +29,7 @@ function pixiPianoRoll(opt) {
         resolution: 2,
         time: '0:0:0',
         renderer: 'WebGLRenderer',
+        noteFormat: 'String',
         noteData: []
     }, opt);
 
@@ -54,11 +55,17 @@ function pixiPianoRoll(opt) {
         innerNoteHeight = noteHeight - gridLineWidth,
         noteGrid = { horizontal: [], vertical: [] };
 
+    function getTeoriaNote(note) {
+        var noteObj = teoria.note['from' + opt.noteFormat](note);
+
+        return opt.noteFormat === 'Frequency' ? noteObj.note : noteObj;
+    }
+
     function getNoteRange() {
         var min, max;
 
         opt.noteData.forEach(function (noteData) {
-            var keyNumber = teoria.note(noteData[1]).key();
+            var keyNumber = getTeoriaNote(noteData[1]).key();
 
             if (keyNumber < min || typeof min !== 'number') {
                 min = keyNumber;
@@ -139,7 +146,7 @@ function pixiPianoRoll(opt) {
 
                 var color = opt.noteColor,
                     pixiNote = new pixi.Graphics(),
-                    teoriaNote = teoria.note(note),
+                    teoriaNote = getTeoriaNote(note),
                     x = transportTimeToX(transportTime) + halfGridLineWidth,
                     y = opt.height - (teoriaNote.key() - noteRange.min) * noteHeight + halfGridLineWidth,
                     width = barWidth / parseInt(duration);
