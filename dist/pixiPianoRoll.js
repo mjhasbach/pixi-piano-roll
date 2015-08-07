@@ -107,7 +107,7 @@ function pixiPianoRoll(opt) {
     }
 
     function drawBackground() {
-        rollContainer.addChild(new pixi.Graphics().clear().beginFill(opt.backgroundColor).drawRect(0, 0, opt.width, opt.height).endFill());
+        rollContainer.addChild(new pixi.Graphics().beginFill(opt.backgroundColor).drawRect(0, 0, opt.width, opt.height).endFill());
     }
 
     function transportTimeToX(transportTime) {
