@@ -12,12 +12,17 @@
 var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
 
 function pixiPianoRoll(opt) {
+    var colors = {
+        black: 0,
+        white: 0xFFFFFF
+    };
+
     opt = Object.assign({
         width: 900,
         height: 400,
         noteColor: musicalScaleColors.dDJameson,
         gridLineColor: 0x333333,
-        backgroundColor: 0x000000,
+        backgroundColor: colors.black,
         bpm: 140,
         antialias: true,
         zoom: 4,
@@ -32,6 +37,9 @@ function pixiPianoRoll(opt) {
         renderer = new pixi[opt.renderer](opt.width, opt.height, { antialias: opt.antialias }),
         stage = new pixi.Container(),
         noteContainer = new pixi.Container(),
+        pianoContainer = new pixi.Container(),
+        rollContainer = new pixi.Container(),
+        rollContainerScale = 0.89,
         noteRange = getNoteRange(opt.noteData),
         noteRangeDiff = noteRange.max - noteRange.min,
         barWidth = opt.width / opt.zoom,
@@ -63,8 +71,43 @@ function pixiPianoRoll(opt) {
         return { min: min - 1, max: max };
     }
 
+    function drawPianoKeys() {
+        var whiteKeys = [],
+            blackKeys = [],
+            whiteKeyWidth = barWidth / 2 * rollContainerScale,
+            blackKeyWidth = whiteKeyWidth / 1.575;
+
+        for (var i = noteRange.min + 1; i < noteRange.max + 1; i++) {
+            var y = opt.height + (noteRange.min - i) * noteHeight,
+                note = teoria.note.fromKey(i),
+                chroma = note.chroma();
+
+            if (new Set([0, 2, 4, 5, 7, 9, 11]).has(chroma)) {
+                whiteKeys.push({
+                    y: y + (new Set([4, 11]).has(chroma) ? 0 : -noteHeight / 2),
+                    width: whiteKeyWidth,
+                    height: new Set([2, 7, 9]).has(chroma) ? noteHeight * 2 : noteHeight * 1.5,
+                    color: colors.white
+                });
+            } else {
+                blackKeys.push({
+                    y: y,
+                    width: blackKeyWidth,
+                    height: noteHeight,
+                    color: colors.black
+                });
+            }
+        }
+
+        whiteKeys.concat(blackKeys).forEach(function (key) {
+            pianoContainer.addChild(new pixi.Graphics().beginFill(key.color).lineStyle(key.color === colors.white ? gridLineWidth : 0, colors.black).drawRect(0, key.y, key.width, key.height).endFill());
+        });
+
+        stage.addChild(pianoContainer);
+    }
+
     function drawBackground() {
-        stage.addChild(new pixi.Graphics().clear().beginFill(opt.backgroundColor).drawRect(0, 0, opt.width, opt.height).endFill());
+        rollContainer.addChild(new pixi.Graphics().clear().beginFill(opt.backgroundColor).drawRect(0, 0, opt.width, opt.height).endFill());
     }
 
     function transportTimeToX(transportTime) {
@@ -132,8 +175,11 @@ function pixiPianoRoll(opt) {
             }
         }
 
-        stage.addChild(noteContainer);
         noteContainer.x = -transportTimeToX(opt.time);
+        rollContainer.addChild(noteContainer);
+        rollContainer.width = rollContainer.width * rollContainerScale;
+        rollContainer.x = opt.width * (1 - rollContainerScale);
+        stage.addChild(rollContainer);
     }
 
     function drawGridlines(type) {
@@ -219,7 +265,7 @@ function pixiPianoRoll(opt) {
                 graphic: line
             });
 
-            stage.addChild(line);
+            rollContainer.addChild(line);
         }
 
         for (i = 0; i < opt.zoom * opt.resolution + 1; i++) {
@@ -231,7 +277,7 @@ function pixiPianoRoll(opt) {
                 graphic: line
             });
 
-            stage.addChild(line);
+            rollContainer.addChild(line);
         }
     }
 
@@ -259,6 +305,7 @@ function pixiPianoRoll(opt) {
     initGridlines();
     drawGridlines();
     drawNotes();
+    drawPianoKeys();
 
     renderer.render(stage);
 
