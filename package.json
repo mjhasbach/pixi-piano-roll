@@ -27,6 +27,7 @@
     "gulp-rename": "~1.2.2",
     "gulp-uglify": "~1.2.0",
     "gulp-umd": "~0.2.0",
+    "release-script": "~0.2.1",
     "run-sequence": "~1.1.2"
   },
   "dependencies": {
@@ -36,5 +37,10 @@
   },
   "files": [
     "dist/*"
-  ]
+  ],
+  "scripts": {
+    "patch": "release patch",
+    "minor": "release minor",
+    "major": "release major"
+  }
 }
