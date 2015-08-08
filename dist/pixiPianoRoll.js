@@ -327,13 +327,18 @@ function pixiPianoRoll(opt) {
 
     renderer.render(stage);
 
-    return Object.defineProperties({
-        play: function play() {
-            playing = true;
-            requestAnimationFrame(animate);
-        },
-        pause: function pause() {
-            playing = false;
+    var pianoRoll = Object.defineProperties({
+        playback: {
+            toggle: function toggle() {
+                playing ? pianoRoll.playback.pause() : pianoRoll.playback.play();
+            },
+            play: function play() {
+                playing = true;
+                requestAnimationFrame(animate);
+            },
+            pause: function pause() {
+                playing = false;
+            }
         }
     }, {
         playing: {
@@ -351,6 +356,8 @@ function pixiPianoRoll(opt) {
             enumerable: true
         }
     });
+
+    return pianoRoll;
 }
 return pixiPianoRoll;
 }));
