@@ -123,6 +123,10 @@ function pixiPianoRoll(opt) {
     }
 
     function transportTimeToX(transportTime) {
+        if (!transportTime) {
+            return 0;
+        }
+
         var _transportTime$split = transportTime.split(':');
 
         var _transportTime$split2 = _slicedToArray(_transportTime$split, 3);
@@ -335,11 +339,19 @@ function pixiPianoRoll(opt) {
 
     var pianoRoll = Object.defineProperties({
         playback: {
-            toggle: function toggle() {
-                playing ? pianoRoll.playback.pause() : pianoRoll.playback.play();
+            toggle: function toggle(time) {
+                playing ? pianoRoll.playback.pause() : pianoRoll.playback.play(time);
             },
-            play: function play() {
+            play: function play(time) {
+                var xTime = -transportTimeToX(time);
+
+                if (xTime) {
+                    moveVerticalGridLines(noteContainer.x - xTime);
+                    noteContainer.x = xTime;
+                }
+
                 playing = true;
+
                 requestAnimationFrame(animate);
             },
             pause: function pause() {
