@@ -278,8 +278,19 @@ function pixiPianoRoll(opt) {
         for (i = 0; i < opt.zoom * opt.resolution + 1; i++) {
             var line = new pixi.Graphics();
 
+            var _opt$time$split = opt.time.split(':');
+
+            var _opt$time$split2 = _slicedToArray(_opt$time$split, 3);
+
+            var bar = _opt$time$split2[0];
+            var _opt$time$split2$1 = _opt$time$split2[1];
+            var quarter = _opt$time$split2$1 === undefined ? 0 : _opt$time$split2$1;
+            var _opt$time$split2$2 = _opt$time$split2[2];
+            var sixteenth = _opt$time$split2$2 === undefined ? 0 : _opt$time$split2$2;
+            var offset = quarter * beatWidth + sixteenth * sixteenthWidth;
+
             noteGrid.vertical.push({
-                x: i * gridLineSpacing - halfGridLineWidth,
+                x: i * gridLineSpacing - halfGridLineWidth - offset,
                 y: 0,
                 graphic: line
             });
