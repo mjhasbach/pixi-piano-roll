@@ -34,6 +34,8 @@ function pixiPianoRoll(opt) {
     }, opt);
 
     var lastTime = undefined,
+        beatsPerMs = undefined,
+        pxMovementPerMs = undefined,
         playing = false,
         renderer = new pixi[opt.renderer](opt.width, opt.height, { antialias: opt.antialias }),
         stage = new pixi.Container(),
@@ -46,14 +48,17 @@ function pixiPianoRoll(opt) {
         barWidth = opt.width / opt.zoom,
         beatWidth = opt.width / (opt.zoom * 4),
         sixteenthWidth = beatWidth / 4,
-        beatsPerMs = opt.bpm / 60 / 1000,
-        pxMovementPerMs = beatWidth * beatsPerMs,
         gridLineWidth = barWidth / 100,
         halfGridLineWidth = gridLineWidth / 2,
         gridLineSpacing = barWidth / opt.resolution,
         noteHeight = opt.height / noteRangeDiff,
         innerNoteHeight = noteHeight - gridLineWidth,
         noteGrid = { horizontal: [], vertical: [] };
+
+    function setBPM(bpm) {
+        beatsPerMs = bpm / 60 / 1000;
+        pxMovementPerMs = beatWidth * beatsPerMs;
+    }
 
     function getTeoriaNote(note) {
         var noteObj = teoria.note['from' + opt.noteFormat](note);
@@ -319,6 +324,7 @@ function pixiPianoRoll(opt) {
         playing ? requestAnimationFrame(animate) : lastTime = null;
     }
 
+    setBPM(opt.bpm);
     drawBackground();
     initGridlines();
     drawGridlines();
@@ -341,6 +347,13 @@ function pixiPianoRoll(opt) {
             }
         }
     }, {
+        bpm: {
+            set: function set(bpm) {
+                setBPM(bpm);
+            },
+            configurable: true,
+            enumerable: true
+        },
         playing: {
             get: function get() {
                 return playing;
