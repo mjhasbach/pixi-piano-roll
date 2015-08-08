@@ -67,7 +67,8 @@ function pixiPianoRoll(opt) {
     }
 
     function getNoteRange() {
-        var min, max;
+        var min = undefined,
+            max = undefined;
 
         opt.noteData.forEach(function (noteData) {
             var keyNumber = getTeoriaNote(noteData[1]).key();
