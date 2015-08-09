@@ -290,6 +290,12 @@ function pixiPianoRoll(opt) {
             line.x = noteGrid.vertical[noteGrid.vertical.length - 1].x + gridLineSpacing;
 
             noteGrid.vertical.push(line);
+        } else if (noteGrid.vertical[noteGrid.vertical.length - 1].x > opt.width) {
+            var line = noteGrid.vertical.pop();
+
+            line.x = noteGrid.vertical[0].x - gridLineSpacing;
+
+            noteGrid.vertical.unshift(line);
         }
     }
 
@@ -367,19 +373,24 @@ function pixiPianoRoll(opt) {
                 playing ? pianoRoll.playback.pause() : pianoRoll.playback.play(time);
             },
             play: function play(time) {
-                var xTime = -transportTimeToX(time);
-
-                if (xTime) {
-                    moveVerticalGridLines(noteContainer.x - xTime);
-                    noteContainer.x = xTime;
+                if (time) {
+                    pianoRoll.playback.seek(time);
                 }
 
                 playing = true;
-
                 requestAnimationFrame(animate);
             },
             pause: function pause() {
                 playing = false;
+            },
+            seek: function seek(time) {
+                var xTime = -transportTimeToX(time),
+                    xDiff = noteContainer.x - xTime;
+
+                moveVerticalGridLines(xDiff);
+                drawGridlines('vertical');
+                noteContainer.x = xTime;
+                renderer.render(stage);
             }
         }
     }, {
