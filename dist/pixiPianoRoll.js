@@ -373,12 +373,14 @@ function pixiPianoRoll(opt) {
                 playing ? pianoRoll.playback.pause() : pianoRoll.playback.play(time);
             },
             play: function play(time) {
-                if (time) {
-                    pianoRoll.playback.seek(time);
-                }
+                if (!playing) {
+                    if (time) {
+                        pianoRoll.playback.seek(time);
+                    }
 
-                playing = true;
-                requestAnimationFrame(animate);
+                    playing = true;
+                    requestAnimationFrame(animate);
+                }
             },
             pause: function pause() {
                 playing = false;
