@@ -27,7 +27,7 @@ JavaScript 2D WebGL / Canvas animated piano roll
 **License**: MIT  
 **Copyright**: Matthew Hasbach 2015  
 <a name="exp_module_pixiPianoRoll--pixiPianoRoll"></a>
-### pixiPianoRoll(opt) ? <code>[pianoRollAPI](#pianoRollAPI)</code> ?
+### pixiPianoRoll(opt) ⇒ <code>[pianoRollAPI](#pianoRollAPI)</code> ⏏
 Instantiate a pixiPianoRoll
 
 **Kind**: Exported function  
