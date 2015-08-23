@@ -1,6 +1,6 @@
 {
   "name": "pixi-piano-roll",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "JavaScript 2D WebGL / Canvas animated piano roll",
   "main": "dist/pixiPianoRoll.js",
   "license": "MIT",
