@@ -24,9 +24,11 @@
   "devDependencies": {
     "gulp": "~3.9.0",
     "gulp-babel": "~5.2.0",
+    "gulp-jsdoc-to-markdown": "~1.1.1",
     "gulp-rename": "~1.2.2",
     "gulp-uglify": "~1.2.0",
     "gulp-umd": "~0.2.0",
+    "gulp-util": "~3.0.6",
     "release-script": "~0.2.1",
     "run-sequence": "~1.1.2"
   },
