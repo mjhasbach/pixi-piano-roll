@@ -15,6 +15,9 @@
 <dt><a href="#noteDuration">noteDuration</a> : <code>string</code> | <code>number</code></dt>
 <dd><p>Note duration expressed as a number (e.g. <code>1</code> for a whole note) or string (e.g. <code>&quot;4n&quot;</code> for a quarter note)</p>
 </dd>
+<dt><a href="#noteData">noteData</a> : <code>Array.&lt;Array.&lt;transportTime, note, noteDuration&gt;&gt;</code></dt>
+<dd><p>See the typedefs for <a href="#transportTime">transportTime</a>, <a href="#note">note</a>, and <a href="#noteDuration">noteDuration</a></p>
+</dd>
 <dt><a href="#pianoRollAPI">pianoRollAPI</a> : <code>Object</code></dt>
 <dd><p>The piano roll API</p>
 </dd>
@@ -37,6 +40,7 @@ Instantiate a pixiPianoRoll
 | opt | <code>Object</code> |  | Options object |
 | [opt.width] | <code>number</code> | <code>900</code> | Width of the piano roll |
 | [opt.height] | <code>number</code> | <code>400</code> | Height of the piano roll |
+| [opt.pianoKeyWidth] | <code>number</code> | <code>125</code> | Width of the piano keys |
 | [opt.noteColor] | <code>number</code> &#124; <code>Object.&lt;number&gt;</code> | <code>musicalScaleColors.dDJameson</code> | Hexadecimal color of every note or object that has music note property names and hexadecimal color values. See [musical-scale-colors](https://github.com/mjhasbach/musical-scale-colors) for palettes (including the default). |
 | [opt.noteColor] | <code>number</code> | <code>0x333333</code> | Hexadecimal color of the grid lines |
 | [opt.noteColor] | <code>number</code> | <code>0</code> | Hexadecimal color of the background |
@@ -47,7 +51,7 @@ Instantiate a pixiPianoRoll
 | [opt.time] | <code>[transportTime](#transportTime)</code> | <code>0:0:0</code> | The [transportTime](#transportTime) at which playback will begin |
 | [opt.renderer] | <code>string</code> | <code>&quot;WebGLRenderer&quot;</code> | Determines the renderer type. Must be `"WebGLRenderer"` or `"CanvasRenderer"`. |
 | [opt.noteFormat] | <code>string</code> | <code>&quot;String&quot;</code> | The format of the [notes](#note) in `opt.noteData`. `"String"` for scientific or Helmholtz notation, `"Key"` for piano key numbers, `"Frequency"` for audio frequencies, or `"MIDI"` for MIDI note numbers. |
-| [opt.noteData] | <code>Array.&lt;Array.&lt;transportTime, note, noteDuration&gt;&gt;</code> | <code>[]</code> | See the typedefs for [transportTime](#transportTime), [note](#note), and [noteDuration](#noteDuration) |
+| [opt.noteData] | <code>[noteData](#noteData)</code> | <code>[]</code> | Note data |
 
 **Example**  
 ```js
@@ -92,6 +96,11 @@ Musical note expressed in [Scientific notation](https://en.wikipedia.org/wiki/Sc
 Note duration expressed as a number (e.g. `1` for a whole note) or string (e.g. `"4n"` for a quarter note)
 
 **Kind**: global typedef  
+<a name="noteData"></a>
+## noteData : <code>Array.&lt;Array.&lt;transportTime, note, noteDuration&gt;&gt;</code>
+See the typedefs for [transportTime](#transportTime), [note](#note), and [noteDuration](#noteDuration)
+
+**Kind**: global typedef  
 <a name="pianoRollAPI"></a>
 ## pianoRollAPI : <code>Object</code>
 The piano roll API
@@ -105,6 +114,7 @@ The piano roll API
     * [.pause()](#pianoRollAPI.playback.pause)
     * [.seek(time)](#pianoRollAPI.playback.seek)
   * [.bpm](#pianoRollAPI.bpm) : <code>number</code>
+  * [.noteData](#pianoRollAPI.noteData) : <code>[noteData](#noteData)</code>
   * [.playing](#pianoRollAPI.playing) : <code>boolean</code>
   * [.view](#pianoRollAPI.view) : <code>HTMLElement</code>
 
@@ -158,6 +168,11 @@ Change the playback position
 <a name="pianoRollAPI.bpm"></a>
 ### pianoRollAPI.bpm : <code>number</code>
 Change the bpm by changing this property
+
+**Kind**: static property of <code>[pianoRollAPI](#pianoRollAPI)</code>  
+<a name="pianoRollAPI.noteData"></a>
+### pianoRollAPI.noteData : <code>[noteData](#noteData)</code>
+Change the note data by changing this property
 
 **Kind**: static property of <code>[pianoRollAPI](#pianoRollAPI)</code>  
 <a name="pianoRollAPI.playing"></a>

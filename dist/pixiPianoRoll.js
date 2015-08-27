@@ -34,11 +34,18 @@
  */
 
 /**
+ * See the typedefs for [transportTime]{@link transportTime}, [note]{@link note}, and [noteDuration]{@link noteDuration}
+ * @typedef {Array.<Array<transportTime, note, noteDuration>>} noteData
+ * @global
+ */
+
+/**
  * Instantiate a pixiPianoRoll
  * @alias module:pixiPianoRoll
  * @param {Object} opt - Options object
  * @param {number} [opt.width=900] - Width of the piano roll
  * @param {number} [opt.height=400] - Height of the piano roll
+ * @param {number} [opt.pianoKeyWidth=125] - Width of the piano keys
  * @param {number|Object<number>} [opt.noteColor=musicalScaleColors.dDJameson] - Hexadecimal color of every note or object that has music note property names and hexadecimal color values. See [musical-scale-colors]{@link https://github.com/mjhasbach/musical-scale-colors} for palettes (including the default).
  * @param {number} [opt.noteColor=0x333333] - Hexadecimal color of the grid lines
  * @param {number} [opt.noteColor=0] - Hexadecimal color of the background
@@ -49,7 +56,7 @@
  * @param {transportTime} [opt.time=0:0:0] - The [transportTime]{@link transportTime} at which playback will begin
  * @param {string} [opt.renderer=WebGLRenderer] - Determines the renderer type. Must be `"WebGLRenderer"` or `"CanvasRenderer"`.
  * @param {string} [opt.noteFormat=String] - The format of the [notes]{@link note} in `opt.noteData`. `"String"` for scientific or Helmholtz notation, `"Key"` for piano key numbers, `"Frequency"` for audio frequencies, or `"MIDI"` for MIDI note numbers.
- * @param {Array.<Array<transportTime, note, noteDuration>>} [opt.noteData=[]] - See the typedefs for [transportTime]{@link transportTime}, [note]{@link note}, and [noteDuration]{@link noteDuration}
+ * @param {noteData} [opt.noteData=[]] - Note data
  * @returns {pianoRollAPI}
  * @example
 var pianoRoll = pixiPianoRoll({
@@ -91,6 +98,7 @@ function pixiPianoRoll(opt) {
     opt = Object.assign({
         width: 900,
         height: 400,
+        pianoKeyWidth: 125,
         noteColor: musicalScaleColors.dDJameson,
         gridLineColor: 0x333333,
         backgroundColor: colors.black,
@@ -107,29 +115,26 @@ function pixiPianoRoll(opt) {
     var lastTime = undefined,
         beatsPerMs = undefined,
         pxMovementPerMs = undefined,
+        noteContainer = undefined,
+        noteRange = undefined,
+        noteRangeDiff = undefined,
+        noteHeight = undefined,
+        innerNoteHeight = undefined,
+        pianoContainer = undefined,
+        barWidth = undefined,
+        beatWidth = undefined,
+        sixteenthWidth = undefined,
+        gridLineWidth = undefined,
+        halfGridLineWidth = undefined,
+        gridLineSpacing = undefined,
+        noteGrid = {},
         playing = false,
         renderer = new pixi[opt.renderer](opt.width, opt.height, { antialias: opt.antialias }),
         stage = new pixi.Container(),
-        noteContainer = new pixi.Container(),
-        pianoContainer = new pixi.Container(),
         rollContainer = new pixi.Container(),
-        rollContainerScale = 0.89,
-        noteRange = getNoteRange(opt.noteData),
-        noteRangeDiff = noteRange.max - noteRange.min,
-        barWidth = opt.width / opt.zoom,
-        beatWidth = opt.width / (opt.zoom * 4),
-        sixteenthWidth = beatWidth / 4,
-        gridLineWidth = barWidth / 100,
-        halfGridLineWidth = gridLineWidth / 2,
-        gridLineSpacing = barWidth / opt.resolution,
-        noteHeight = opt.height / noteRangeDiff,
-        innerNoteHeight = noteHeight - gridLineWidth,
-        noteGrid = { horizontal: [], vertical: [] };
-
-    function setBPM(bpm) {
-        beatsPerMs = bpm / 60 / 1000;
-        pxMovementPerMs = beatWidth * beatsPerMs;
-    }
+        gridlineContainers = {
+        main: new pixi.Container()
+    };
 
     function getTeoriaNote(note) {
         var noteObj = teoria.note['from' + opt.noteFormat](note);
@@ -181,8 +186,10 @@ function pixiPianoRoll(opt) {
     function drawPianoKeys() {
         var whiteKeys = [],
             blackKeys = [],
-            whiteKeyWidth = barWidth / 2 * rollContainerScale,
-            blackKeyWidth = whiteKeyWidth / 1.575;
+            blackKeyWidth = opt.pianoKeyWidth / 1.575;
+
+        stage.removeChild(pianoContainer);
+        pianoContainer = new pixi.Container();
 
         for (var i = noteRange.min; i < noteRange.max + 2; i++) {
             var y = opt.height + (noteRange.min - i) * noteHeight,
@@ -192,7 +199,7 @@ function pixiPianoRoll(opt) {
             if (new Set([0, 2, 4, 5, 7, 9, 11]).has(chroma)) {
                 whiteKeys.push({
                     y: y + (new Set([4, 11]).has(chroma) ? 0 : -noteHeight / 2),
-                    width: whiteKeyWidth,
+                    width: opt.pianoKeyWidth,
                     height: new Set([2, 7, 9]).has(chroma) ? noteHeight * 2 : noteHeight * 1.5,
                     color: colors.white
                 });
@@ -214,10 +221,10 @@ function pixiPianoRoll(opt) {
     }
 
     function drawBackground() {
-        rollContainer.addChild(new pixi.Graphics().beginFill(opt.backgroundColor).drawRect(0, 0, opt.width, opt.height).endFill());
+        stage.addChild(new pixi.Graphics().beginFill(opt.backgroundColor).drawRect(0, 0, opt.width, opt.height).endFill());
     }
 
-    function transportTimeToX(transportTime) {
+    function transportTimeToX(transportTime, isNote) {
         if (!transportTime) {
             return 0;
         }
@@ -231,11 +238,16 @@ function pixiPianoRoll(opt) {
         var quarter = _transportTime$split2$1 === undefined ? 0 : _transportTime$split2$1;
         var _transportTime$split2$2 = _transportTime$split2[2];
         var sixteenth = _transportTime$split2$2 === undefined ? 0 : _transportTime$split2$2;
+        var x = barWidth * bar + beatWidth * quarter + sixteenthWidth * sixteenth;
 
-        return barWidth * bar + beatWidth * quarter + sixteenthWidth * sixteenth;
+        return isNote ? x : opt.pianoKeyWidth - x;
     }
 
     function drawNotes() {
+        var oldContainer = rollContainer.removeChild(noteContainer);
+
+        noteContainer = new pixi.Container();
+
         var _iteratorNormalCompletion2 = true;
         var _didIteratorError2 = false;
         var _iteratorError2 = undefined;
@@ -251,7 +263,7 @@ function pixiPianoRoll(opt) {
                 var color = opt.noteColor,
                     pixiNote = new pixi.Graphics(),
                     teoriaNote = getTeoriaNote(note),
-                    x = transportTimeToX(transportTime) + halfGridLineWidth,
+                    x = transportTimeToX(transportTime, true) + halfGridLineWidth,
                     y = opt.height - (teoriaNote.key() - noteRange.min) * noteHeight + halfGridLineWidth,
                     width = barWidth / parseInt(duration);
 
@@ -286,10 +298,8 @@ function pixiPianoRoll(opt) {
             }
         }
 
-        noteContainer.x = -transportTimeToX(opt.time);
+        noteContainer.x = oldContainer ? oldContainer.x : transportTimeToX(opt.time);
         rollContainer.addChild(noteContainer);
-        rollContainer.width = rollContainer.width * rollContainerScale;
-        rollContainer.x = opt.width * (1 - rollContainerScale);
         stage.addChild(rollContainer);
     }
 
@@ -355,7 +365,7 @@ function pixiPianoRoll(opt) {
             }
         }
 
-        if (noteGrid.vertical[0].x + gridLineWidth < 0) {
+        if (noteGrid.vertical[0].x + gridLineWidth < opt.pianoKeyWidth) {
             var line = noteGrid.vertical.shift();
 
             line.x = noteGrid.vertical[noteGrid.vertical.length - 1].x + gridLineSpacing;
@@ -370,43 +380,61 @@ function pixiPianoRoll(opt) {
         }
     }
 
-    function initGridlines() {
+    function initGridlines(type) {
         var i = undefined;
 
-        for (i = 0; i < noteRangeDiff + 1; i++) {
-            var line = new pixi.Graphics();
+        if (!type || type === 'horizontal') {
+            gridlineContainers.main.removeChild(gridlineContainers.horizontal);
+            gridlineContainers.horizontal = new pixi.Container();
+            noteGrid.horizontal = [];
 
-            noteGrid.horizontal.push({
-                x: 0,
-                y: i * noteHeight - halfGridLineWidth,
-                graphic: line
-            });
+            for (i = 0; i < noteRangeDiff + 1; i++) {
+                var line = new pixi.Graphics();
 
-            rollContainer.addChild(line);
+                noteGrid.horizontal.push({
+                    x: 0,
+                    y: i * noteHeight - halfGridLineWidth,
+                    graphic: line
+                });
+
+                gridlineContainers.horizontal.addChild(line);
+            }
+
+            gridlineContainers.main.addChild(gridlineContainers.horizontal);
         }
 
-        for (i = 0; i < opt.zoom * opt.resolution + 1; i++) {
-            var line = new pixi.Graphics();
+        if (!type || type === 'vertical') {
+            gridlineContainers.main.removeChild(gridlineContainers.vertical);
+            gridlineContainers.vertical = new pixi.Container();
+            noteGrid.vertical = [];
 
-            var _opt$time$split = opt.time.split(':');
+            for (i = 0; i < opt.zoom * opt.resolution + 1; i++) {
+                var line = new pixi.Graphics();
 
-            var _opt$time$split2 = _slicedToArray(_opt$time$split, 3);
+                var _opt$time$split = opt.time.split(':');
 
-            var bar = _opt$time$split2[0];
-            var _opt$time$split2$1 = _opt$time$split2[1];
-            var quarter = _opt$time$split2$1 === undefined ? 0 : _opt$time$split2$1;
-            var _opt$time$split2$2 = _opt$time$split2[2];
-            var sixteenth = _opt$time$split2$2 === undefined ? 0 : _opt$time$split2$2;
-            var offset = quarter * beatWidth + sixteenth * sixteenthWidth;
+                var _opt$time$split2 = _slicedToArray(_opt$time$split, 3);
 
-            noteGrid.vertical.push({
-                x: i * gridLineSpacing - halfGridLineWidth - offset,
-                y: 0,
-                graphic: line
-            });
+                var bar = _opt$time$split2[0];
+                var _opt$time$split2$1 = _opt$time$split2[1];
+                var quarter = _opt$time$split2$1 === undefined ? 0 : _opt$time$split2$1;
+                var _opt$time$split2$2 = _opt$time$split2[2];
+                var sixteenth = _opt$time$split2$2 === undefined ? 0 : _opt$time$split2$2;
+                var offset = quarter * beatWidth + sixteenth * sixteenthWidth;
 
-            rollContainer.addChild(line);
+                noteGrid.vertical.push({
+                    x: i * gridLineSpacing - halfGridLineWidth - offset + opt.pianoKeyWidth,
+                    y: 0,
+                    graphic: line
+                });
+
+                gridlineContainers.vertical.addChild(line);
+            }
+
+            gridlineContainers.main.addChild(gridlineContainers.vertical);
         }
+
+        rollContainer.addChild(gridlineContainers.main);
     }
 
     function animate(frameTime) {
@@ -429,14 +457,30 @@ function pixiPianoRoll(opt) {
         playing ? requestAnimationFrame(animate) : lastTime = null;
     }
 
-    setBPM(opt.bpm);
-    drawBackground();
-    initGridlines();
-    drawGridlines();
-    drawNotes();
-    drawPianoKeys();
+    function calculate() {
+        noteRange = getNoteRange(opt.noteData);
+        noteRangeDiff = noteRange.max - noteRange.min;
+        barWidth = (opt.width - opt.pianoKeyWidth) / opt.zoom;
+        beatWidth = (opt.width - opt.pianoKeyWidth) / (opt.zoom * 4);
+        sixteenthWidth = beatWidth / 4;
+        gridLineWidth = barWidth / 100;
+        halfGridLineWidth = gridLineWidth / 2;
+        gridLineSpacing = barWidth / opt.resolution;
+        beatsPerMs = opt.bpm / 60 / 1000;
+        pxMovementPerMs = beatWidth * beatsPerMs;
+        noteHeight = opt.height / noteRangeDiff;
+        innerNoteHeight = noteHeight - gridLineWidth;
+    }
 
-    renderer.render(stage);
+    (function init() {
+        calculate();
+        drawBackground();
+        initGridlines();
+        drawGridlines();
+        drawNotes();
+        drawPianoKeys();
+        renderer.render(stage);
+    })();
 
     /**
      * The piano roll API
@@ -483,11 +527,10 @@ function pixiPianoRoll(opt) {
              * @param {transportTime} time - The new playback position
              */
             seek: function seek(time) {
-                var xTime = -transportTimeToX(time),
+                var xTime = transportTimeToX(time),
                     xDiff = noteContainer.x - xTime;
 
                 moveVerticalGridLines(xDiff);
-                drawGridlines('vertical');
                 noteContainer.x = xTime;
                 renderer.render(stage);
             }
@@ -500,7 +543,27 @@ function pixiPianoRoll(opt) {
                 */
 
             set: function set(bpm) {
-                setBPM(bpm);
+                opt.bpm = bpm;
+                calculate();
+            },
+            configurable: true,
+            enumerable: true
+        },
+        noteData: {
+            /**
+             * Change the note data by changing this property
+             * @memberof pianoRollAPI
+             * @type {noteData}
+             */
+
+            set: function set(noteData) {
+                opt.noteData = noteData;
+                calculate();
+                initGridlines('horizontal');
+                drawGridlines('horizontal');
+                drawNotes();
+                drawPianoKeys();
+                renderer.render(stage);
             },
             configurable: true,
             enumerable: true
