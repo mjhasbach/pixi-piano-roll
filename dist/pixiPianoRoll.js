@@ -339,6 +339,16 @@ function pixiPianoRoll(opt) {
         }
     }
 
+    function getFirstVerticalGridLineX(transportX) {
+        var x = transportX;
+
+        while (x + gridLineSpacing < opt.pianoKeyWidth) {
+            x += gridLineSpacing;
+        }
+
+        return x;
+    }
+
     function drawGridlines(type) {
         var i = undefined;
 
@@ -354,23 +364,15 @@ function pixiPianoRoll(opt) {
         }
 
         if (!type || type === 'vertical') {
+            var offset = getFirstVerticalGridLineX(noteContainer ? noteContainer.x : transportTimeToX(opt.time));
+
             gridlineContainers.main.removeChild(gridlineContainers.vertical);
             gridlineContainers.vertical = new pixi.Container();
 
             for (i = 0; i < opt.zoom * opt.resolution + 1; i++) {
-                var _opt$time$split = opt.time.split(':');
-
-                var _opt$time$split2 = _slicedToArray(_opt$time$split, 3);
-
-                var bar = _opt$time$split2[0];
-                var _opt$time$split2$1 = _opt$time$split2[1];
-                var quarter = _opt$time$split2$1 === undefined ? 0 : _opt$time$split2$1;
-                var _opt$time$split2$2 = _opt$time$split2[2];
-                var sixteenth = _opt$time$split2$2 === undefined ? 0 : _opt$time$split2$2;
-                var offset = quarter * beatWidth + sixteenth * sixteenthWidth;
                 var line = new pixi.Graphics().beginFill(opt.gridLineColor).drawRect(0, 0, gridLineWidth, opt.height).endFill();
 
-                line.x = i * gridLineSpacing - halfGridLineWidth - offset + opt.pianoKeyWidth;
+                line.x = offset + i * gridLineSpacing - halfGridLineWidth;
 
                 gridlineContainers.vertical.addChild(line);
             }
@@ -487,6 +489,24 @@ function pixiPianoRoll(opt) {
             set: function set(bpm) {
                 opt.bpm = bpm;
                 calculate();
+            },
+            configurable: true,
+            enumerable: true
+        },
+        zoom: {
+            /**
+             * Change the zoom by changing this property
+             * @memberof pianoRollAPI
+             * @type {number}
+             */
+
+            set: function set(zoom) {
+                opt.zoom = zoom;
+                calculate();
+                drawGridlines();
+                drawNotes();
+                rollContainer.addChild(rollContainer.removeChild(noteContainer));
+                renderer.render(stage);
             },
             configurable: true,
             enumerable: true

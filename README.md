@@ -114,6 +114,7 @@ The piano roll API
     * [.pause()](#pianoRollAPI.playback.pause)
     * [.seek(time)](#pianoRollAPI.playback.seek)
   * [.bpm](#pianoRollAPI.bpm) : <code>number</code>
+  * [.zoom](#pianoRollAPI.zoom) : <code>number</code>
   * [.noteData](#pianoRollAPI.noteData) : <code>[noteData](#noteData)</code>
   * [.playing](#pianoRollAPI.playing) : <code>boolean</code>
   * [.view](#pianoRollAPI.view) : <code>HTMLElement</code>
@@ -168,6 +169,11 @@ Change the playback position
 <a name="pianoRollAPI.bpm"></a>
 ### pianoRollAPI.bpm : <code>number</code>
 Change the bpm by changing this property
+
+**Kind**: static property of <code>[pianoRollAPI](#pianoRollAPI)</code>  
+<a name="pianoRollAPI.zoom"></a>
+### pianoRollAPI.zoom : <code>number</code>
+Change the zoom by changing this property
 
 **Kind**: static property of <code>[pianoRollAPI](#pianoRollAPI)</code>  
 <a name="pianoRollAPI.noteData"></a>
