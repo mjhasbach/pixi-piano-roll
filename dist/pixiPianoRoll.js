@@ -222,10 +222,6 @@ function pixiPianoRoll(opt) {
         stage.addChild(pianoContainer);
     }
 
-    function drawBackground() {
-        stage.addChild(new pixi.Graphics().beginFill(opt.backgroundColor).drawRect(0, 0, opt.width, opt.height).endFill());
-    }
-
     function transportTimeToX(transportTime, isNote) {
         if (!transportTime) {
             return 0;
@@ -422,10 +418,10 @@ function pixiPianoRoll(opt) {
 
     (function init() {
         calculate();
-        drawBackground();
         drawGridlines();
         drawNotes();
         drawPianoKeys();
+        renderer.backgroundColor = opt.backgroundColor;
         renderer.render(stage);
     })();
 
