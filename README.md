@@ -41,10 +41,11 @@ Instantiate a pixiPianoRoll
 | [opt.width] | <code>number</code> | <code>900</code> | Width of the piano roll |
 | [opt.height] | <code>number</code> | <code>400</code> | Height of the piano roll |
 | [opt.pianoKeyWidth] | <code>number</code> | <code>125</code> | Width of the piano keys |
-| [opt.noteColor] | <code>number</code> &#124; <code>Object.&lt;number&gt;</code> | <code>musicalScaleColors.dDJameson</code> | Hexadecimal color of every note or object that has music note property names and hexadecimal color values. See [musical-scale-colors](https://github.com/mjhasbach/musical-scale-colors) for palettes (including the default). |
+| [opt.noteColor] | <code>number</code> &#124; <code>Object.&lt;number&gt;</code> | <code>musicalScaleColors.dDJameson</code> | Hexadecimal color of every note or object that has pitch class (chroma) property names and hexadecimal color values. See [musical-scale-colors](https://github.com/mjhasbach/musical-scale-colors) for palettes (including the default). |
 | [opt.noteColor] | <code>number</code> | <code>0x333333</code> | Hexadecimal color of the grid lines |
 | [opt.noteColor] | <code>number</code> | <code>0</code> | Hexadecimal color of the background |
 | [opt.bpm] | <code>number</code> | <code>140</code> | Beats per minute |
+| [opt.activateKeys] | <code>boolean</code> | <code>true</code> | If true, the color of the piano keys will change to the color of the notes that intersect them |
 | [opt.antialias] | <code>boolean</code> | <code>true</code> | Whether or not the renderer will use antialiasing |
 | [opt.zoom] | <code>number</code> | <code>4</code> | Amount of visible measures |
 | [opt.resolution] | <code>number</code> | <code>2</code> | Amount of vertical grid lines per measure |

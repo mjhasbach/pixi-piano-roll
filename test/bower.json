@@ -2,7 +2,7 @@
   "name": "pixi-piano-roll-test",
   "private": true,
   "dependencies": {
-    "musical-scale-colors": "~1.0.0",
+    "musical-scale-colors": "~2.0.1",
     "pixi.js": "~3.0.7",
     "teoria": "~1.12.0"
   }

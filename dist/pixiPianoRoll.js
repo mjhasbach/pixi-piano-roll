@@ -46,10 +46,11 @@
  * @param {number} [opt.width=900] - Width of the piano roll
  * @param {number} [opt.height=400] - Height of the piano roll
  * @param {number} [opt.pianoKeyWidth=125] - Width of the piano keys
- * @param {number|Object<number>} [opt.noteColor=musicalScaleColors.dDJameson] - Hexadecimal color of every note or object that has music note property names and hexadecimal color values. See [musical-scale-colors]{@link https://github.com/mjhasbach/musical-scale-colors} for palettes (including the default).
+ * @param {number|Object<number>} [opt.noteColor=musicalScaleColors.dDJameson] - Hexadecimal color of every note or object that has pitch class (chroma) property names and hexadecimal color values. See [musical-scale-colors]{@link https://github.com/mjhasbach/musical-scale-colors} for palettes (including the default).
  * @param {number} [opt.noteColor=0x333333] - Hexadecimal color of the grid lines
  * @param {number} [opt.noteColor=0] - Hexadecimal color of the background
  * @param {number} [opt.bpm=140] - Beats per minute
+ * @param {boolean} [opt.activateKeys=true] - If true, the color of the piano keys will change to the color of the notes that intersect them
  * @param {boolean} [opt.antialias=true] - Whether or not the renderer will use antialiasing
  * @param {number} [opt.zoom=4] - Amount of visible measures
  * @param {number} [opt.resolution=2] - Amount of vertical grid lines per measure
@@ -103,6 +104,7 @@ function pixiPianoRoll(opt) {
         gridLineColor: 0x333333,
         backgroundColor: colors.black,
         bpm: 140,
+        activateKeys: true,
         antialias: true,
         zoom: 4,
         resolution: 2,
@@ -112,7 +114,8 @@ function pixiPianoRoll(opt) {
         noteData: []
     }, opt);
 
-    var lastTime = undefined,
+    var keys = undefined,
+        lastTime = undefined,
         beatsPerMs = undefined,
         pxMovementPerMs = undefined,
         noteContainer = undefined,
@@ -127,6 +130,7 @@ function pixiPianoRoll(opt) {
         gridLineWidth = undefined,
         halfGridLineWidth = undefined,
         gridLineSpacing = undefined,
+        activeKeys = new Set(),
         playing = false,
         stage = new pixi.Container(),
         rollContainer = new pixi.Container(),
@@ -185,38 +189,50 @@ function pixiPianoRoll(opt) {
         return { min: min - 1, max: max };
     }
 
+    function drawPianoKey(key, active) {
+        return (key.graphic || new pixi.Graphics()).clear().beginFill(active ? key.activeColor : key.color).lineStyle(key.color === colors.white ? noteHeight / 10 : 0, colors.black).drawRect(0, key.y, key.width, key.height).endFill();
+    }
+
     function drawPianoKeys() {
         var whiteKeys = [],
             blackKeys = [],
             blackKeyWidth = opt.pianoKeyWidth / 1.575;
 
+        keys = {};
         stage.removeChild(pianoContainer);
         pianoContainer = new pixi.Container();
 
         for (var i = noteRange.min; i < noteRange.max + 2; i++) {
             var y = opt.height + (noteRange.min - i) * noteHeight,
                 note = teoria.note.fromKey(i),
-                chroma = note.chroma();
+                chroma = note.chroma(),
+                key = {
+                keyNumber: note.key(),
+                activeColor: typeof opt.noteColor === 'number' ? opt.noteColor : opt.noteColor[chroma]
+            };
 
             if (new Set([0, 2, 4, 5, 7, 9, 11]).has(chroma)) {
-                whiteKeys.push({
+                whiteKeys.push(Object.assign(key, {
                     y: y + (new Set([4, 11]).has(chroma) ? 0 : -noteHeight / 2),
                     width: opt.pianoKeyWidth,
                     height: new Set([2, 7, 9]).has(chroma) ? noteHeight * 2 : noteHeight * 1.5,
                     color: colors.white
-                });
+                }));
             } else {
-                blackKeys.push({
+                blackKeys.push(Object.assign(key, {
                     y: y,
                     width: blackKeyWidth,
                     height: noteHeight,
                     color: colors.black
-                });
+                }));
             }
         }
 
         whiteKeys.concat(blackKeys).forEach(function (key) {
-            pianoContainer.addChild(new pixi.Graphics().beginFill(key.color).lineStyle(key.color === colors.white ? noteHeight / 10 : 0, colors.black).drawRect(0, key.y, key.width, key.height).endFill());
+            var pixiKey = drawPianoKey(key);
+
+            keys[key.keyNumber] = Object.assign(key, { graphic: pixiKey });
+            pianoContainer.addChild(pixiKey);
         });
 
         stage.addChild(pianoContainer);
@@ -251,35 +267,25 @@ function pixiPianoRoll(opt) {
         var _iteratorError2 = undefined;
 
         try {
-            var _loop = function () {
+            for (var _iterator2 = opt.noteData[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                 var _step2$value = _slicedToArray(_step2.value, 3);
 
                 var transportTime = _step2$value[0];
                 var note = _step2$value[1];
                 var duration = _step2$value[2];
 
-                var color = opt.noteColor,
-                    pixiNote = new pixi.Graphics(),
+                var pixiNote = new pixi.Graphics(),
                     teoriaNote = getTeoriaNote(note),
-                    x = transportTimeToX(transportTime, true) + halfGridLineWidth,
-                    y = opt.height - (teoriaNote.key() - noteRange.min) * noteHeight + halfGridLineWidth,
-                    width = barWidth / parseInt(duration);
+                    keyNumber = teoriaNote.key(),
+                    color = typeof opt.noteColor === 'number' ? opt.noteColor : opt.noteColor[teoriaNote.chroma()];
 
-                if (typeof color === 'object') {
-                    Object.keys(color).forEach(function (key) {
-                        if (teoria.note(key).chroma() === teoriaNote.chroma()) {
-                            color = color[key];
-                        }
-                    });
-                }
+                pixiNote.beginFill(color).drawRect(0, 0, barWidth / parseInt(duration), innerNoteHeight).endFill();
+
+                pixiNote.x = transportTimeToX(transportTime, true) + halfGridLineWidth;
+                pixiNote.y = opt.height - (keyNumber - noteRange.min) * noteHeight + halfGridLineWidth;
+                pixiNote.keyNumber = keyNumber;
 
                 noteContainer.addChild(pixiNote);
-
-                pixiNote.beginFill(color).drawRect(x, y, width, innerNoteHeight).endFill();
-            };
-
-            for (var _iterator2 = opt.noteData[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                _loop();
             }
         } catch (err) {
             _didIteratorError2 = true;
@@ -382,6 +388,101 @@ function pixiPianoRoll(opt) {
         rollContainer.addChild(gridlineContainers.main);
     }
 
+    function activateKeys() {
+        if (!opt.activateKeys) {
+            return;
+        }
+
+        var intersectedKeys = new Set();
+
+        var _iteratorNormalCompletion4 = true;
+        var _didIteratorError4 = false;
+        var _iteratorError4 = undefined;
+
+        try {
+            for (var _iterator4 = noteContainer.children[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                var note = _step4.value;
+
+                if (note.containsPoint(new pixi.Point(opt.pianoKeyWidth, note.y))) {
+                    intersectedKeys.add(note.keyNumber);
+                }
+            }
+        } catch (err) {
+            _didIteratorError4 = true;
+            _iteratorError4 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion4 && _iterator4['return']) {
+                    _iterator4['return']();
+                }
+            } finally {
+                if (_didIteratorError4) {
+                    throw _iteratorError4;
+                }
+            }
+        }
+
+        var _iteratorNormalCompletion5 = true;
+        var _didIteratorError5 = false;
+        var _iteratorError5 = undefined;
+
+        try {
+            for (var _iterator5 = intersectedKeys[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                var intersectedKey = _step5.value;
+
+                if (!activeKeys.has(intersectedKey)) {
+                    var key = keys[intersectedKey];
+
+                    drawPianoKey(key, true);
+                    activeKeys.add(intersectedKey);
+                }
+            }
+        } catch (err) {
+            _didIteratorError5 = true;
+            _iteratorError5 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion5 && _iterator5['return']) {
+                    _iterator5['return']();
+                }
+            } finally {
+                if (_didIteratorError5) {
+                    throw _iteratorError5;
+                }
+            }
+        }
+
+        var _iteratorNormalCompletion6 = true;
+        var _didIteratorError6 = false;
+        var _iteratorError6 = undefined;
+
+        try {
+            for (var _iterator6 = activeKeys[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+                var activeKey = _step6.value;
+
+                if (!intersectedKeys.has(activeKey)) {
+                    var key = keys[activeKey];
+
+                    drawPianoKey(key);
+                    activeKeys['delete'](activeKey);
+                }
+            }
+        } catch (err) {
+            _didIteratorError6 = true;
+            _iteratorError6 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion6 && _iterator6['return']) {
+                    _iterator6['return']();
+                }
+            } finally {
+                if (_didIteratorError6) {
+                    throw _iteratorError6;
+                }
+            }
+        }
+    }
+
     function animate(frameTime) {
         if (!lastTime) {
             lastTime = frameTime;
@@ -391,13 +492,10 @@ function pixiPianoRoll(opt) {
             horizontalMovement = timeDiff * pxMovementPerMs;
 
         noteContainer.x = noteContainer.x - horizontalMovement;
-
         moveVerticalGridLines(horizontalMovement);
-
+        activateKeys();
         lastTime = frameTime;
-
         renderer.render(stage);
-
         playing ? requestAnimationFrame(animate) : lastTime = null;
     }
 
