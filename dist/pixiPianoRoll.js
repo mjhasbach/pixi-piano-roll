@@ -336,12 +336,6 @@ function pixiPianoRoll(opt) {
             line.x = verticalGridlines[verticalGridlines.length - 1].x + gridLineSpacing;
 
             gridlineContainers.vertical.addChild(line);
-        } else if (verticalGridlines[verticalGridlines.length - 1].x > opt.width) {
-            var line = gridlineContainers.vertical.removeChildAt(verticalGridlines.length - 1);
-
-            line.x = verticalGridlines[0].x - gridLineSpacing;
-
-            gridlineContainers.vertical.addChildAt(line, 0);
         }
     }
 
@@ -475,11 +469,11 @@ function pixiPianoRoll(opt) {
              * @param {transportTime} time - The new playback position
              */
             seek: function seek(time) {
-                var xTime = transportTimeToX(time),
-                    xDiff = noteContainer.x - xTime;
+                opt.time = time;
 
-                moveVerticalGridLines(xDiff);
-                noteContainer.x = xTime;
+                noteContainer.x = transportTimeToX(time);
+                drawGridlines('vertical');
+                rollContainer.addChild(rollContainer.removeChild(noteContainer));
                 renderer.render(stage);
             }
         }
