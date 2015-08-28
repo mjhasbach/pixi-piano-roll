@@ -511,6 +511,23 @@ function pixiPianoRoll(opt) {
             configurable: true,
             enumerable: true
         },
+        resolution: {
+            /**
+             * Change the resolution by changing this property
+             * @memberof pianoRollAPI
+             * @type {number}
+             */
+
+            set: function set(resolution) {
+                opt.resolution = resolution;
+                calculate();
+                drawGridlines('vertical');
+                rollContainer.addChild(rollContainer.removeChild(noteContainer));
+                renderer.render(stage);
+            },
+            configurable: true,
+            enumerable: true
+        },
         noteData: {
             /**
              * Change the note data by changing this property
