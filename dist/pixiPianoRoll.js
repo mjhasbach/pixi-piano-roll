@@ -128,12 +128,15 @@ function pixiPianoRoll(opt) {
         halfGridLineWidth = undefined,
         gridLineSpacing = undefined,
         playing = false,
-        renderer = new pixi[opt.renderer](opt.width, opt.height, { antialias: opt.antialias }),
         stage = new pixi.Container(),
         rollContainer = new pixi.Container(),
         gridlineContainers = {
         main: new pixi.Container()
-    };
+    },
+        renderer = new pixi[opt.renderer](opt.width, opt.height, {
+        antialias: opt.antialias,
+        autoResize: true
+    });
 
     function getTeoriaNote(note) {
         var noteObj = teoria.note['from' + opt.noteFormat](note);
