@@ -127,7 +127,6 @@ function pixiPianoRoll(opt) {
         gridLineWidth = undefined,
         halfGridLineWidth = undefined,
         gridLineSpacing = undefined,
-        noteGrid = {},
         playing = false,
         renderer = new pixi[opt.renderer](opt.width, opt.height, { antialias: opt.antialias }),
         stage = new pixi.Container(),
@@ -303,25 +302,18 @@ function pixiPianoRoll(opt) {
         stage.addChild(rollContainer);
     }
 
-    function drawGridlines(type) {
-        if (typeof type !== 'string') {
-            drawGridlines('horizontal');
-            drawGridlines('vertical');
-            return;
-        }
-
-        var width = type === 'vertical' ? gridLineWidth : opt.width,
-            height = type === 'vertical' ? opt.height : gridLineWidth;
+    function moveVerticalGridLines(horizontalMovement) {
+        var verticalGridlines = gridlineContainers.vertical.children;
 
         var _iteratorNormalCompletion3 = true;
         var _didIteratorError3 = false;
         var _iteratorError3 = undefined;
 
         try {
-            for (var _iterator3 = noteGrid[type][Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            for (var _iterator3 = verticalGridlines[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
                 var line = _step3.value;
 
-                line.graphic.clear().beginFill(opt.gridLineColor).drawRect(line.x, line.y, width, height).endFill();
+                line.x -= horizontalMovement;
             }
         } catch (err) {
             _didIteratorError3 = true;
@@ -337,67 +329,31 @@ function pixiPianoRoll(opt) {
                 }
             }
         }
-    }
 
-    function moveVerticalGridLines(horizontalMovement) {
-        var _iteratorNormalCompletion4 = true;
-        var _didIteratorError4 = false;
-        var _iteratorError4 = undefined;
+        if (verticalGridlines[0].x + gridLineWidth < opt.pianoKeyWidth) {
+            var line = gridlineContainers.vertical.removeChildAt(0);
 
-        try {
-            for (var _iterator4 = noteGrid.vertical[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                var line = _step4.value;
+            line.x = verticalGridlines[verticalGridlines.length - 1].x + gridLineSpacing;
 
-                line.x = line.x - horizontalMovement;
-            }
-        } catch (err) {
-            _didIteratorError4 = true;
-            _iteratorError4 = err;
-        } finally {
-            try {
-                if (!_iteratorNormalCompletion4 && _iterator4['return']) {
-                    _iterator4['return']();
-                }
-            } finally {
-                if (_didIteratorError4) {
-                    throw _iteratorError4;
-                }
-            }
-        }
+            gridlineContainers.vertical.addChild(line);
+        } else if (verticalGridlines[verticalGridlines.length - 1].x > opt.width) {
+            var line = gridlineContainers.vertical.removeChildAt(verticalGridlines.length - 1);
 
-        if (noteGrid.vertical[0].x + gridLineWidth < opt.pianoKeyWidth) {
-            var line = noteGrid.vertical.shift();
+            line.x = verticalGridlines[0].x - gridLineSpacing;
 
-            line.x = noteGrid.vertical[noteGrid.vertical.length - 1].x + gridLineSpacing;
-
-            noteGrid.vertical.push(line);
-        } else if (noteGrid.vertical[noteGrid.vertical.length - 1].x > opt.width) {
-            var line = noteGrid.vertical.pop();
-
-            line.x = noteGrid.vertical[0].x - gridLineSpacing;
-
-            noteGrid.vertical.unshift(line);
+            gridlineContainers.vertical.addChildAt(line, 0);
         }
     }
 
-    function initGridlines(type) {
+    function drawGridlines(type) {
         var i = undefined;
 
         if (!type || type === 'horizontal') {
             gridlineContainers.main.removeChild(gridlineContainers.horizontal);
             gridlineContainers.horizontal = new pixi.Container();
-            noteGrid.horizontal = [];
 
             for (i = 0; i < noteRangeDiff + 1; i++) {
-                var line = new pixi.Graphics();
-
-                noteGrid.horizontal.push({
-                    x: 0,
-                    y: i * noteHeight - halfGridLineWidth,
-                    graphic: line
-                });
-
-                gridlineContainers.horizontal.addChild(line);
+                gridlineContainers.horizontal.addChild(new pixi.Graphics().beginFill(opt.gridLineColor).drawRect(0, i * noteHeight - halfGridLineWidth, opt.width, gridLineWidth).endFill());
             }
 
             gridlineContainers.main.addChild(gridlineContainers.horizontal);
@@ -406,11 +362,8 @@ function pixiPianoRoll(opt) {
         if (!type || type === 'vertical') {
             gridlineContainers.main.removeChild(gridlineContainers.vertical);
             gridlineContainers.vertical = new pixi.Container();
-            noteGrid.vertical = [];
 
             for (i = 0; i < opt.zoom * opt.resolution + 1; i++) {
-                var line = new pixi.Graphics();
-
                 var _opt$time$split = opt.time.split(':');
 
                 var _opt$time$split2 = _slicedToArray(_opt$time$split, 3);
@@ -421,12 +374,9 @@ function pixiPianoRoll(opt) {
                 var _opt$time$split2$2 = _opt$time$split2[2];
                 var sixteenth = _opt$time$split2$2 === undefined ? 0 : _opt$time$split2$2;
                 var offset = quarter * beatWidth + sixteenth * sixteenthWidth;
+                var line = new pixi.Graphics().beginFill(opt.gridLineColor).drawRect(0, 0, gridLineWidth, opt.height).endFill();
 
-                noteGrid.vertical.push({
-                    x: i * gridLineSpacing - halfGridLineWidth - offset + opt.pianoKeyWidth,
-                    y: 0,
-                    graphic: line
-                });
+                line.x = i * gridLineSpacing - halfGridLineWidth - offset + opt.pianoKeyWidth;
 
                 gridlineContainers.vertical.addChild(line);
             }
@@ -448,7 +398,6 @@ function pixiPianoRoll(opt) {
         noteContainer.x = noteContainer.x - horizontalMovement;
 
         moveVerticalGridLines(horizontalMovement);
-        drawGridlines('vertical');
 
         lastTime = frameTime;
 
@@ -475,7 +424,6 @@ function pixiPianoRoll(opt) {
     (function init() {
         calculate();
         drawBackground();
-        initGridlines();
         drawGridlines();
         drawNotes();
         drawPianoKeys();
@@ -559,7 +507,6 @@ function pixiPianoRoll(opt) {
             set: function set(noteData) {
                 opt.noteData = noteData;
                 calculate();
-                initGridlines('horizontal');
                 drawGridlines('horizontal');
                 drawNotes();
                 drawPianoKeys();
