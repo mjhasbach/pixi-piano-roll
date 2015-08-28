@@ -213,7 +213,7 @@ function pixiPianoRoll(opt) {
         }
 
         whiteKeys.concat(blackKeys).forEach(function (key) {
-            pianoContainer.addChild(new pixi.Graphics().beginFill(key.color).lineStyle(key.color === colors.white ? gridLineWidth : 0, colors.black).drawRect(0, key.y, key.width, key.height).endFill());
+            pianoContainer.addChild(new pixi.Graphics().beginFill(key.color).lineStyle(key.color === colors.white ? noteHeight / 10 : 0, colors.black).drawRect(0, key.y, key.width, key.height).endFill());
         });
 
         stage.addChild(pianoContainer);
