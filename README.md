@@ -48,7 +48,7 @@ Instantiate a pixiPianoRoll
 | [opt.activateKeys] | <code>boolean</code> | <code>true</code> | If true, the color of the piano keys will change to the color of the notes that intersect them |
 | [opt.antialias] | <code>boolean</code> | <code>true</code> | Whether or not the renderer will use antialiasing |
 | [opt.zoom] | <code>number</code> | <code>4</code> | Amount of visible measures |
-| [opt.resolution] | <code>number</code> | <code>2</code> | Amount of vertical grid lines per measure |
+| [opt.resolution] | <code>number</code> | <code>1</code> | Amount of vertical grid lines per measure |
 | [opt.time] | <code>[transportTime](#transportTime)</code> | <code>0:0:0</code> | The [transportTime](#transportTime) at which playback will begin |
 | [opt.renderer] | <code>string</code> | <code>&quot;WebGLRenderer&quot;</code> | Determines the renderer type. Must be `"WebGLRenderer"` or `"CanvasRenderer"`. |
 | [opt.noteFormat] | <code>string</code> | <code>&quot;String&quot;</code> | The format of the [notes](#note) in `opt.noteData`. `"String"` for scientific or Helmholtz notation, `"Key"` for piano key numbers, `"Frequency"` for audio frequencies, or `"MIDI"` for MIDI note numbers. |
