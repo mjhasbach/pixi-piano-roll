@@ -304,7 +304,6 @@ function pixiPianoRoll(opt) {
 
         noteContainer.x = oldContainer ? oldContainer.x : transportTimeToX(opt.time);
         rollContainer.addChild(noteContainer);
-        stage.addChild(rollContainer);
     }
 
     function moveVerticalGridLines(horizontalMovement) {
@@ -515,6 +514,7 @@ function pixiPianoRoll(opt) {
     }
 
     (function init() {
+        stage.addChild(rollContainer);
         calculate();
         drawGridlines();
         drawNotes();
@@ -602,7 +602,6 @@ function pixiPianoRoll(opt) {
                 calculate();
                 drawGridlines();
                 drawNotes();
-                rollContainer.addChild(rollContainer.removeChild(noteContainer));
                 renderer.render(stage);
             },
             configurable: true,
