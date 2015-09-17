@@ -130,7 +130,7 @@ function pixiPianoRoll(opt) {
         gridLineWidth = undefined,
         halfGridLineWidth = undefined,
         gridLineSpacing = undefined,
-        activeKeys = new Set(),
+        activeKeys = undefined,
         playing = false,
         stage = new pixi.Container(),
         rollContainer = new pixi.Container(),
@@ -199,6 +199,7 @@ function pixiPianoRoll(opt) {
             blackKeyWidth = opt.pianoKeyWidth / 1.575;
 
         keys = {};
+        activeKeys = new Set();
         stage.removeChild(pianoContainer);
         pianoContainer = new pixi.Container();
 
