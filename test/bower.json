@@ -4,6 +4,6 @@
   "dependencies": {
     "musical-scale-colors": "~2.0.1",
     "pixi.js": "~3.0.7",
-    "teoria": "~1.12.0"
+    "teoria": "~2.1.1"
   }
 }
