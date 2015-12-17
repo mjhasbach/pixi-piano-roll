@@ -18,7 +18,9 @@ gulp.task('ES6ToES5UMD', function() {
     };
 
     return gulp.src(path.join(libDir, moduleNameJS))
-        .pipe(babel())
+        .pipe(babel({
+            presets: ['es2015']
+        }))
         .pipe(umd({
             exports: getModuleName,
             namespace: getModuleName,
