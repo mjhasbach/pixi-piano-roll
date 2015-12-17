@@ -1,10 +1,13 @@
 ## Modules
+
 <dl>
 <dt><a href="#module_pixiPianoRoll">pixiPianoRoll</a></dt>
 <dd><p>JavaScript 2D WebGL / Canvas animated piano roll</p>
 </dd>
 </dl>
+
 ## Typedefs
+
 <dl>
 <dt><a href="#transportTime">transportTime</a> : <code>string</code></dt>
 <dd><p>Playback position expressed in bars:quarters:sixteenths format (e.g. <code>&quot;1:2:0&quot;</code>)</p>
@@ -22,6 +25,7 @@
 <dd><p>The piano roll API</p>
 </dd>
 </dl>
+
 <a name="module_pixiPianoRoll"></a>
 ## pixiPianoRoll
 JavaScript 2D WebGL / Canvas animated piano roll
@@ -109,17 +113,17 @@ The piano roll API
 **Kind**: global typedef  
 
 * [pianoRollAPI](#pianoRollAPI) : <code>Object</code>
-  * [.playback](#pianoRollAPI.playback) : <code>Object</code>
-    * [.toggle([time])](#pianoRollAPI.playback.toggle)
-    * [.play([time])](#pianoRollAPI.playback.play)
-    * [.pause()](#pianoRollAPI.playback.pause)
-    * [.seek(time)](#pianoRollAPI.playback.seek)
-  * [.bpm](#pianoRollAPI.bpm) : <code>number</code>
-  * [.zoom](#pianoRollAPI.zoom) : <code>number</code>
-  * [.resolution](#pianoRollAPI.resolution) : <code>number</code>
-  * [.noteData](#pianoRollAPI.noteData) : <code>[noteData](#noteData)</code>
-  * [.playing](#pianoRollAPI.playing) : <code>boolean</code>
-  * [.view](#pianoRollAPI.view) : <code>HTMLElement</code>
+    * [.playback](#pianoRollAPI.playback) : <code>Object</code>
+        * [.toggle([time])](#pianoRollAPI.playback.toggle)
+        * [.play([time])](#pianoRollAPI.playback.play)
+        * [.pause()](#pianoRollAPI.playback.pause)
+        * [.seek(time)](#pianoRollAPI.playback.seek)
+    * [.bpm](#pianoRollAPI.bpm) : <code>number</code>
+    * [.zoom](#pianoRollAPI.zoom) : <code>number</code>
+    * [.resolution](#pianoRollAPI.resolution) : <code>number</code>
+    * [.noteData](#pianoRollAPI.noteData) : <code>[noteData](#noteData)</code>
+    * [.playing](#pianoRollAPI.playing) : <code>boolean</code>
+    * [.view](#pianoRollAPI.view) : <code>HTMLElement</code>
 
 <a name="pianoRollAPI.playback"></a>
 ### pianoRollAPI.playback : <code>Object</code>
@@ -128,10 +132,10 @@ Contains methods that control playback
 **Kind**: static property of <code>[pianoRollAPI](#pianoRollAPI)</code>  
 
 * [.playback](#pianoRollAPI.playback) : <code>Object</code>
-  * [.toggle([time])](#pianoRollAPI.playback.toggle)
-  * [.play([time])](#pianoRollAPI.playback.play)
-  * [.pause()](#pianoRollAPI.playback.pause)
-  * [.seek(time)](#pianoRollAPI.playback.seek)
+    * [.toggle([time])](#pianoRollAPI.playback.toggle)
+    * [.play([time])](#pianoRollAPI.playback.play)
+    * [.pause()](#pianoRollAPI.playback.pause)
+    * [.seek(time)](#pianoRollAPI.playback.seek)
 
 <a name="pianoRollAPI.playback.toggle"></a>
 #### playback.toggle([time])

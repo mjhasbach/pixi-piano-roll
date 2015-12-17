@@ -7,6 +7,10 @@
     root.pixiPianoRoll = factory(root.PIXI, root.teoria, root.musicalScaleColors);
   }
 }(this, function(pixi, teoria, musicalScaleColors) {
+'use strict';
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; })();
+
 /**
  * JavaScript 2D WebGL / Canvas animated piano roll
  * @module pixiPianoRoll
@@ -86,10 +90,6 @@ document.getElementsByTagName('body')[0].appendChild(pianoRoll.view);
 
 pianoRoll.playback.play();
  */
-'use strict';
-
-var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
-
 function pixiPianoRoll(opt) {
     var colors = {
         black: 0,
@@ -176,8 +176,8 @@ function pixiPianoRoll(opt) {
             _iteratorError = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion && _iterator['return']) {
-                    _iterator['return']();
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
                 }
             } finally {
                 if (_didIteratorError) {
@@ -249,10 +249,10 @@ function pixiPianoRoll(opt) {
         var _transportTime$split2 = _slicedToArray(_transportTime$split, 3);
 
         var bar = _transportTime$split2[0];
-        var _transportTime$split2$1 = _transportTime$split2[1];
-        var quarter = _transportTime$split2$1 === undefined ? 0 : _transportTime$split2$1;
-        var _transportTime$split2$2 = _transportTime$split2[2];
-        var sixteenth = _transportTime$split2$2 === undefined ? 0 : _transportTime$split2$2;
+        var _transportTime$split3 = _transportTime$split2[1];
+        var quarter = _transportTime$split3 === undefined ? 0 : _transportTime$split3;
+        var _transportTime$split4 = _transportTime$split2[2];
+        var sixteenth = _transportTime$split4 === undefined ? 0 : _transportTime$split4;
         var x = barWidth * bar + beatWidth * quarter + sixteenthWidth * sixteenth;
 
         return isNote ? x : opt.pianoKeyWidth - x;
@@ -293,8 +293,8 @@ function pixiPianoRoll(opt) {
             _iteratorError2 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion2 && _iterator2['return']) {
-                    _iterator2['return']();
+                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                    _iterator2.return();
                 }
             } finally {
                 if (_didIteratorError2) {
@@ -325,8 +325,8 @@ function pixiPianoRoll(opt) {
             _iteratorError3 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion3 && _iterator3['return']) {
-                    _iterator3['return']();
+                if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                    _iterator3.return();
                 }
             } finally {
                 if (_didIteratorError3) {
@@ -412,8 +412,8 @@ function pixiPianoRoll(opt) {
             _iteratorError4 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion4 && _iterator4['return']) {
-                    _iterator4['return']();
+                if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                    _iterator4.return();
                 }
             } finally {
                 if (_didIteratorError4) {
@@ -442,8 +442,8 @@ function pixiPianoRoll(opt) {
             _iteratorError5 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion5 && _iterator5['return']) {
-                    _iterator5['return']();
+                if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                    _iterator5.return();
                 }
             } finally {
                 if (_didIteratorError5) {
@@ -464,7 +464,7 @@ function pixiPianoRoll(opt) {
                     var key = keys[activeKey];
 
                     drawPianoKey(key);
-                    activeKeys['delete'](activeKey);
+                    activeKeys.delete(activeKey);
                 }
             }
         } catch (err) {
@@ -472,8 +472,8 @@ function pixiPianoRoll(opt) {
             _iteratorError6 = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion6 && _iterator6['return']) {
-                    _iterator6['return']();
+                if (!_iteratorNormalCompletion6 && _iterator6.return) {
+                    _iterator6.return();
                 }
             } finally {
                 if (_didIteratorError6) {
@@ -530,7 +530,7 @@ function pixiPianoRoll(opt) {
      * @type {Object}
      * @global
      */
-    var pianoRollAPI = Object.defineProperties({
+    var pianoRollAPI = {
         /**
          * Contains methods that control playback
          * @memberof pianoRollAPI
@@ -541,9 +541,11 @@ function pixiPianoRoll(opt) {
              * Pause if playing or play if paused
              * @param {transportTime} [time] - If paused, the position to begin playing. If omitted, playback will begin at the current position.
              */
+
             toggle: function toggle(time) {
                 playing ? pianoRollAPI.playback.pause() : pianoRollAPI.playback.play(time);
             },
+
             /**
              * Begin playback
              * @param {transportTime} [time] - The position to begin playing. If omitted, playback will begin at the current position.
@@ -558,12 +560,14 @@ function pixiPianoRoll(opt) {
                     requestAnimationFrame(animate);
                 }
             },
+
             /**
              * Pause playback
              */
             pause: function pause() {
                 playing = false;
             },
+
             /**
              * Change the playback position
              * @param {transportTime} time - The new playback position
@@ -576,102 +580,72 @@ function pixiPianoRoll(opt) {
                 rollContainer.addChild(rollContainer.removeChild(noteContainer));
                 renderer.render(stage);
             }
+        },
+        /**
+         * Change the bpm by changing this property
+         * @memberof pianoRollAPI
+         * @type {number}
+         */
+        set bpm(bpm) {
+            opt.bpm = bpm;
+            calculate();
+        },
+        /**
+         * Change the zoom by changing this property
+         * @memberof pianoRollAPI
+         * @type {number}
+         */
+        set zoom(zoom) {
+            opt.zoom = zoom;
+            calculate();
+            drawGridlines();
+            drawNotes();
+            renderer.render(stage);
+        },
+        /**
+         * Change the resolution by changing this property
+         * @memberof pianoRollAPI
+         * @type {number}
+         */
+        set resolution(resolution) {
+            opt.resolution = resolution;
+            calculate();
+            drawGridlines('vertical');
+            rollContainer.addChild(rollContainer.removeChild(noteContainer));
+            renderer.render(stage);
+        },
+        /**
+         * Change the note data by changing this property
+         * @memberof pianoRollAPI
+         * @type {noteData}
+         */
+        set noteData(noteData) {
+            opt.noteData = noteData;
+            calculate();
+            drawGridlines('horizontal');
+            drawNotes();
+            drawPianoKeys();
+            renderer.render(stage);
+        },
+        /**
+         * Whether or not playback is ongoing
+         * @memberof pianoRollAPI
+         * @type {boolean}
+         * @readonly
+         */
+        get playing() {
+            return playing;
+        },
+        /**
+         * The piano roll canvas element
+         * @memberof pianoRollAPI
+         * @type {HTMLElement}
+         * @readonly
+         */
+        get view() {
+            return renderer.view;
         }
-    }, {
-        bpm: { /**
-                * Change the bpm by changing this property
-                * @memberof pianoRollAPI
-                * @type {number}
-                */
-
-            set: function set(bpm) {
-                opt.bpm = bpm;
-                calculate();
-            },
-            configurable: true,
-            enumerable: true
-        },
-        zoom: {
-            /**
-             * Change the zoom by changing this property
-             * @memberof pianoRollAPI
-             * @type {number}
-             */
-
-            set: function set(zoom) {
-                opt.zoom = zoom;
-                calculate();
-                drawGridlines();
-                drawNotes();
-                renderer.render(stage);
-            },
-            configurable: true,
-            enumerable: true
-        },
-        resolution: {
-            /**
-             * Change the resolution by changing this property
-             * @memberof pianoRollAPI
-             * @type {number}
-             */
-
-            set: function set(resolution) {
-                opt.resolution = resolution;
-                calculate();
-                drawGridlines('vertical');
-                rollContainer.addChild(rollContainer.removeChild(noteContainer));
-                renderer.render(stage);
-            },
-            configurable: true,
-            enumerable: true
-        },
-        noteData: {
-            /**
-             * Change the note data by changing this property
-             * @memberof pianoRollAPI
-             * @type {noteData}
-             */
-
-            set: function set(noteData) {
-                opt.noteData = noteData;
-                calculate();
-                drawGridlines('horizontal');
-                drawNotes();
-                drawPianoKeys();
-                renderer.render(stage);
-            },
-            configurable: true,
-            enumerable: true
-        },
-        playing: {
-            /**
-             * Whether or not playback is ongoing
-             * @memberof pianoRollAPI
-             * @type {boolean}
-             * @readonly
-             */
-
-            get: function get() {
-                return playing;
-            },
-            configurable: true,
-            enumerable: true
-        },
-        view: {
-            /**
-             * The piano roll canvas element
-             * @memberof pianoRollAPI
-             * @type {HTMLElement}
-             * @readonly
-             */
-
-            get: function get() {
-                return renderer.view;
-            },
-            configurable: true,
-            enumerable: true
-        }
-    });
+    };
 
     return pianoRollAPI;
 }
