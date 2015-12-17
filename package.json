@@ -22,19 +22,19 @@
     "url": "https://github.com/mjhasbach"
   },
   "devDependencies": {
-    "gulp": "~3.9.0",
-    "gulp-babel": "~6.1.1",
-    "gulp-jsdoc-to-markdown": "~1.2.0",
-    "gulp-rename": "~1.2.2",
-    "gulp-uglify": "~1.5.1",
-    "gulp-umd": "~0.2.0",
-    "gulp-util": "~3.0.6",
-    "run-sequence": "~1.1.2"
+    "gulp": "3.9.0",
+    "gulp-babel": "6.1.1",
+    "gulp-jsdoc-to-markdown": "1.2.0",
+    "gulp-rename": "1.2.2",
+    "gulp-uglify": "1.5.1",
+    "gulp-umd": "0.2.0",
+    "gulp-util": "3.0.6",
+    "run-sequence": "1.1.2"
   },
   "dependencies": {
-    "musical-scale-colors": "~2.0.1",
-    "pixi.js": "~3.0.7",
-    "teoria": "~2.1.1"
+    "musical-scale-colors": "2.0.1",
+    "pixi.js": "3.0.7",
+    "teoria": "2.1.1"
   },
   "files": [
     "dist/*"
